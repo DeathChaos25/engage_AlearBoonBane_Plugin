@@ -1,0 +1,32 @@
+[package]
+name = "AlearBoonBane"
+version = "0.1.0"
+authors = []
+edition = "2021"
+
+[package.metadata.skyline]
+titleid = "01006A800016E000" # Smash Ultimate
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+skyline = "0.6"
+unity2 = { git = "https://github.com/DivineDragonFanClub/unity2" }
+engage-il2cpp = { git = "https://github.com/DivineDragonFanClub/engage-il2cpp", features = [
+    "app-capabilitybase_1",
+    "app-jobdata",
+    "app-persondata",
+    "app-structdata_1",
+    "system-collections-generic-dictionary_2",
+    "system-collections-generic-list_1",
+    "system-object",
+] }
+cobapi = { git = "https://github.com/DivineDragonFanClub/cobapi" } # Utilities to talk with Cobalt. When new methods are added, you might need to increase the version to use opt-in to them.
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+lto = true
