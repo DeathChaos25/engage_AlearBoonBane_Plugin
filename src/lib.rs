@@ -4,7 +4,9 @@ use cobapi::{
 };
 
 mod structs_types;
+use engage_il2cpp::app::procinst::IProcInst;
 use structs_types::*;
+use unity2::OptionalMethod;
 
 use std::sync::OnceLock;
 use engage_il2cpp::ext::GameVariableManager;
@@ -13,6 +15,7 @@ use engage_il2cpp::app::jobdata::{IJobDataMethods, JobData};
 use engage_il2cpp::app::structdata_1::IStructData_1Methods;
 use engage_il2cpp::{List_1Ext};
 use engage_il2cpp::app::capabilitybase_1::ICapabilityBase_1Methods;
+use engage_il2cpp::app::procinst::ProcInst;
 
 static BACKUP_PERSON_DATA_STATS: OnceLock<PersonDataStats> = OnceLock::new();
 
@@ -24,6 +27,11 @@ extern "C" fn my_system_event_listener(event: &Event<SystemEvent>)
         {
             SystemEvent::GamedataLoaded => check_and_validate_person_data(),
             SystemEvent::SaveLoaded { ty, slot_id } => on_save_data_loaded(ty, slot_id),
+            SystemEvent::ProcInstBind { proc, parent: _ } => {
+                if proc.borrow().m_hash_code() == -1912552174 {
+                    println!("Entering MainMenuSequence");
+                }
+            }
             // This syntax means you do not intend to deal with the other events and will do nothing if they are received.
             _ => (),
         }
@@ -162,9 +170,40 @@ pub fn check_and_validate_person_data()
     }
 }
 
+#[unity2::hook("App", "MainMenuSequence.NetworkServiceSelectMenuSequence", "CreateBind")]
+pub fn network_service_select_hook(parent: ProcInst, method_info: OptionalMethod) {
+    panic!("Network settings reached!");   
+}
+
 
 #[skyline::main(name = "AlearBoonBane")]
 pub fn main() {
+    std::panic::set_hook(Box::new(|info| {
+        let location = info.location().unwrap();
+
+        let msg = match info.payload().downcast_ref::<&'static str>() {
+            Some(s) => *s,
+            None => {
+                match info.payload().downcast_ref::<String>() {
+                    Some(s) => &s[..],
+                    None => "Box<Any>",
+                }
+            },
+        };
+
+        println!("AlearBoonBane v{}\nLocation: {}\n\n{}", env!("CARGO_PKG_VERSION"), location, msg);
+
+        let err_msg = format!(
+            "AlearBoonBane v{}\nLocation: {}\n\n{}\0",
+            env!("CARGO_PKG_VERSION"),
+            location,
+            msg
+        );
+
+        skyline::error::show_error(69, "AlearBoonBane has panicked! Press 'Details' for more information.\n\0", err_msg.as_str());
+    }));
+
     println!("Hello from skyline plugin AlearBoonBane");
     cobapi::register_system_event_handler(my_system_event_listener);
+    skyline::install_hooks!(network_service_select_hook);
 }
