@@ -7,7 +7,7 @@ mod structs_types;
 use structs_types::*;
 
 use std::sync::OnceLock;
-use engage_il2cpp::GameVariableManager;
+use engage_il2cpp::ext::GameVariableManager;
 use engage_il2cpp::app::persondata::{IPersonDataMethods, PersonData};
 use engage_il2cpp::app::jobdata::{IJobDataMethods, JobData};
 use engage_il2cpp::app::structdata_1::IStructData_1Methods;
