@@ -5,8 +5,9 @@ use cobapi::{
 
 mod structs_types;
 use structs_types::*;
+use unity2::il2cpp::OptionalMethod;
 
-use std::sync::OnceLock;
+use std::sync::{atomic::{AtomicI32, Ordering}, OnceLock};
 use engage_il2cpp::ext::GameVariableManager;
 use engage_il2cpp::app::persondata::{IPersonDataMethods, PersonData};
 use engage_il2cpp::app::jobdata::{IJobDataMethods, JobData};
@@ -15,6 +16,8 @@ use engage_il2cpp::{List_1Ext};
 use engage_il2cpp::app::capabilitybase_1::ICapabilityBase_1Methods;
 
 static BACKUP_PERSON_DATA_STATS: OnceLock<PersonDataStats> = OnceLock::new();
+static BOON_TYPE: AtomicI32 = AtomicI32::new(BoonBaneType::Hp as i32);
+static BANE_TYPE: AtomicI32 = AtomicI32::new(BoonBaneType::Hp as i32);
 
 extern "C" fn my_system_event_listener(event: &Event<SystemEvent>) 
 {
@@ -44,8 +47,12 @@ pub fn on_save_data_loaded( save_type: &i32, slot_id: &i32 )
     if *save_type <= 1  { return; } // Only care about actual save files being loaded
 
     println!("Save type #{} being loaded from slot #{}", save_type, slot_id);
+
     let boon_type = return_as_boon_bane_type(GameVariableManager::get_number("alear_boon_type"));
     let bane_type = return_as_boon_bane_type(GameVariableManager::get_number("alear_bane_type"));
+
+    BOON_TYPE.store(boon_type as i32, Ordering::Relaxed);
+    BANE_TYPE.store(bane_type as i32, Ordering::Relaxed);
 
     println!("Current boon type is {:?} and bane type is {:?}", boon_type, bane_type);
 
@@ -162,9 +169,23 @@ pub fn check_and_validate_person_data()
     }
 }
 
+#[skyline::hook(offset = 0x02285890)]
+pub fn App_GameSaveDataUtil__Write(_super: u64, save_type: i32, slot_id: i32, result_header_callback: u64, method_info: OptionalMethod) 
+{
+    if save_type <= 1 { return; } // Only care about actual save files being written
+
+    println!("Save type #{} being written to slot #{}", save_type, slot_id);
+    GameVariableManager::set_number("alear_boon_type", BOON_TYPE.load(Ordering::Relaxed));
+    GameVariableManager::set_number("alear_bane_type", BANE_TYPE.load(Ordering::Relaxed));
+
+    println!("Current boon type is {:?} and bane type is {:?}", BOON_TYPE.load(Ordering::Relaxed), BANE_TYPE.load(Ordering::Relaxed));
+
+    call_original!(_super, save_type, slot_id, result_header_callback, method_info);
+}
 
 #[skyline::main(name = "AlearBoonBane")]
 pub fn main() {
     println!("Hello from skyline plugin AlearBoonBane");
     cobapi::register_system_event_handler(my_system_event_listener);
+    skyline::install_hook!(App_GameSaveDataUtil__Write);
 }
