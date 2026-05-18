@@ -4,18 +4,31 @@ use cobapi::{
 };
 
 mod structs_types;
-use engage_il2cpp::app::procinst::IProcInst;
+use engage_il2cpp::app::{IItemMenuDetailSetter, IItemMenuDetailSetterMethods, IMainMenuSequence, IMainMenuSequence_MenuSequenceBaseMethods, MainMenuSequence_Label, UnitItem};
+use engage_il2cpp::app::procinst::{IProcInst, IProcInstMethods, ProcInst};
+use engage_il2cpp::app::procvoidfunction::ProcVoidFunction ;
+use engage_il2cpp::app::procvoidmethod::ProcVoidMethod;
+use engage_il2cpp::app::scriptutil::ScriptUtil;
+use engage_il2cpp::unity_engine::{IComponentMethods, IGameObjectMethods};
+use engage_il2cpp::unity_engine::ui::Image;
 use structs_types::*;
-use unity2::OptionalMethod;
+use unity2::{Array, Cast, Il2CppString, IlInstance, OptionalMethod, SystemObject};
 
 use std::sync::OnceLock;
-use engage_il2cpp::ext::GameVariableManager;
-use engage_il2cpp::app::persondata::{IPersonDataMethods, PersonData};
-use engage_il2cpp::app::jobdata::{IJobDataMethods, JobData};
+use engage_il2cpp::ext::{GameVariableManager, ProcVoidMethodExt};
+use engage_il2cpp::app::{jobdata::{IJobDataMethods, JobData}, persondata::{IPersonDataMethods, PersonData}};
 use engage_il2cpp::app::structdata_1::IStructData_1Methods;
-use engage_il2cpp::{List_1Ext};
+use engage_il2cpp::{List_1Ext, ProcVoidFunctionExt};
 use engage_il2cpp::app::capabilitybase_1::ICapabilityBase_1Methods;
-use engage_il2cpp::app::procinst::ProcInst;
+use engage_il2cpp::app::mainmenusequence::{ MainMenuSequence_NetworkServiceSelectMenuSequence};
+use engage_il2cpp::app::proc::Proc;
+use engage_il2cpp::app::titlebar::{ITitleBarMethods, TitleBar};
+use engage_il2cpp::tm_pro::textmeshprougui::TextMeshProUGUI;
+use engage_il2cpp::app::infoutil::InfoUtil;
+use engage_il2cpp::app::itemmenudetailsetter::ItemMenuDetailSetter;
+use engage_il2cpp::unity_engine::transform::{ITransform, ITransformMethods};
+use engage_il2cpp::app::mainmenusequence::MainMenuSequence;
+use engage_il2cpp::app::mainmenusequence::MainMenuSequence_LanguageSettingMenuSequence;
 
 static BACKUP_PERSON_DATA_STATS: OnceLock<PersonDataStats> = OnceLock::new();
 
@@ -28,7 +41,7 @@ extern "C" fn my_system_event_listener(event: &Event<SystemEvent>)
             SystemEvent::GamedataLoaded => check_and_validate_person_data(),
             SystemEvent::SaveLoaded { ty, slot_id } => on_save_data_loaded(ty, slot_id),
             SystemEvent::ProcInstBind { proc, parent: _ } => {
-                if proc.borrow().m_hash_code() == -1912552174 {
+                if (*proc.borrow()).m_hash_code() == -1912552174 {
                     println!("Entering MainMenuSequence");
                 }
             }
@@ -170,13 +183,80 @@ pub fn check_and_validate_person_data()
     }
 }
 
-#[unity2::hook("App", "MainMenuSequence.NetworkServiceSelectMenuSequence", "CreateBind")]
-pub fn network_service_select_hook(parent: ProcInst, method_info: OptionalMethod) {
-    panic!("Network settings reached!");   
+pub extern "C" fn boon_bane_set_title_bar(_proc: IlInstance, _method_info: OptionalMethod) {
+    TitleBar::get_instance().open_header("Boon and Banes", Il2CppString::null(), "KHID_汎用");
 }
 
+pub extern "C" fn boon_bane_create_menu_bind(proc: ProcInst, _method_info: OptionalMethod) {
+    // let list = List_1::<BasicMenuItem>::new();
+    // let item1 = BasicMenuItem::instantiate().unwrap();
+    // item1.set_name("test");
+    // list.add(item1);
+    // let menu_content= BasicDialogContent::new();
+    // let basic = BasicDialog::new(list, menu_content);
+    // basic.set_text("dialog");
+    // basic.create_bind(proc, basic.create_default_desc(), "Dialog");
+    // // BasicDialog::create_basic_dialog_bind(proc, list);
+    let script = ScriptUtil::try_get_data::<PersonData>(Array::of_len(0).unwrap(), 0, PersonData::new());
+    MainMenuSequence_LanguageSettingMenuSequence::create_bind(proc);
+    println!("Proc current: {}, child: {}, super: {}", proc.m_name(), proc.m_child().m_name(), proc.m_super().m_name());
+    let menu: MainMenuSequence_LanguageSettingMenuSequence = proc.m_child().try_cast::<MainMenuSequence_LanguageSettingMenuSequence>().unwrap();
+    proc.get_super().try_cast::<MainMenuSequence>().unwrap().set_m_next_sequence(MainMenuSequence_Label::r#continue());
+}
 
-#[skyline::main(name = "AlearBoonBane")]
+#[unity2::hook("App", "MainMenuSequence.NetworkServiceSelectMenuSequence", "CreateBind")]
+pub fn network_service_select_hook(parent: MainMenuSequence, method_info: OptionalMethod) {
+    // let root = parent.m_history_info().m_window().get(0).m_root_object();
+    // let title = Ut::find_child_game_object(root, "Title");
+    // let title_text = title.get_component(SystemType::from_il2cpp_type(TextMeshProUGUI::il_type()).unwrap());
+    // let casted_text = title_text.try_cast::<TextMeshProUGUI>().unwrap();
+    // casted_text.set_text("New text");
+
+    let proc = MainMenuSequence_NetworkServiceSelectMenuSequence::new();
+    let descs = proc.get_proc_desc();
+
+    for (i, desc) in descs.into_iter().enumerate() {
+        println!("Desc #{} - {}", i, desc.get_class().name());
+    }
+
+    descs.set(1, Proc::call_2(ProcVoidMethod::from_fn(proc.as_instance(), boon_bane_set_title_bar).unwrap()));
+    descs.set(5, Proc::call(ProcVoidFunction::from_fn(proc.as_instance(), boon_bane_create_menu_bind).unwrap()));
+    proc.create_bind(parent, descs, Il2CppString::null());
+}
+
+#[skyline::hook(offset = 0x02040F40)]
+pub fn set_data_item_hook(
+    this: ItemMenuDetailSetter,
+    selected_item: UnitItem,
+    method_info: OptionalMethod
+) {
+    call_original!(this, selected_item, method_info);
+  
+    let atk_t = this
+        .m_title_atk()
+        .get_game_object()
+        .get_transform()
+        .get_parent();
+    
+    let atk_text = atk_t
+        .find_child("Value")
+        .get_game_object()
+        .get_component_3("TextMeshProUGUI")
+        .try_cast::<TextMeshProUGUI>()
+        .unwrap();
+    let atk_icon = atk_t
+        .find_child("Value/Arrow")
+        .get_game_object()
+        .get_component_3("Image")
+        .try_cast::<Image>()
+        .unwrap();
+    
+    // White text as is, can change by adjusting the two i32 parameters
+    let atk_color = this.try_set_up_down_icon(atk_icon, 0, 0);
+    InfoUtil::try_set_color(atk_text, atk_color);
+}
+
+#[skyline::main(name = "alear_boon_bane")]
 pub fn main() {
     std::panic::set_hook(Box::new(|info| {
         let location = info.location().unwrap();
@@ -205,5 +285,5 @@ pub fn main() {
 
     println!("Hello from skyline plugin AlearBoonBane");
     cobapi::register_system_event_handler(my_system_event_listener);
-    skyline::install_hooks!(network_service_select_hook);
+    skyline::install_hooks!(network_service_select_hook, set_data_item_hook);
 }
