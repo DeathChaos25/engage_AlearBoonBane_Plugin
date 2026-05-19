@@ -11,7 +11,7 @@ use engage_il2cpp::system::collections::generic::{IList_1Methods, List_1};
 use engage_il2cpp::unity_engine::{IComponentMethods, IGameObjectMethods, IRectTransformMethods, ITransformMethods, RectTransform, Vector2};
 use structs_types::*;
 
-use engage_il2cpp::app::{BasicMenu_Result, IBasicMenuItem, IBasicMenuItemMethods, IBasicMenuMethods, IMainMenuSequence, IMainMenuSequence_LanguageSettingMenuSequenceMethods, IMainMenuSequence_MenuSequenceBase, IMainMenuSequence_MenuSequenceBaseMethods, ISingletonProcInst_1Methods, MainMenuSequence_Label, MainMenuSequence_LanguageSettingMenuSequence_Menu, MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem};
+use engage_il2cpp::app::{BasicMenu_Result, IBasicMenuItem, IBasicMenuItemMethods, IBasicMenuMethods, IMainMenuSequence, IMainMenuSequence_LanguageSettingMenuSequenceMethods, IMainMenuSequence_MenuSequenceBase, IMainMenuSequence_MenuSequenceBaseMethods, ISingletonProcInst_1Methods, MainMenuSequence_Label, MainMenuSequence_LanguageSettingMenuSequence_Menu, MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, MainMenuSequence_NetworkServiceSelectMenuSequence_Menu};
 use engage_il2cpp::app::procinst::{IProcInst, IProcInstMethods, ProcInst};
 use engage_il2cpp::app::procvoidfunction::ProcVoidFunction ;
 use engage_il2cpp::app::procvoidmethod::ProcVoidMethod;
@@ -195,15 +195,16 @@ pub extern "C" fn boon_get_name(this: MainMenuSequence_LanguageSettingMenuSequen
 
 #[unity2::callback]
 pub extern "C" fn boon_a_call_get_name(this: MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItem, _method_info: OptionalMethod) -> BasicMenu_Result {
-    MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog::create_bind(this.m_menu());
+    // MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog::create_bind(this.m_menu());
     MainMenuSequence::get_instance().set_m_next_sequence(MainMenuSequence_Label::final_confirm());
-    BasicMenu_Result::se_decide()
+    BasicMenu_Result::close_decide()
 }
 
 #[unity2::callback]
 pub extern "C" fn boon_b_call_get_name(this: MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItem, _method_info: OptionalMethod) -> BasicMenu_Result {
-    MainMenuSequence::get_instance().set_m_now_sequence(MainMenuSequence_Label::game_mode_select());
-    BasicMenu_Result::close_parent_cancel()
+    // MainMenuSequence::get_instance().set_m_next_sequence(MainMenuSequence_Label::grow_mode_select());
+    MainMenuSequence_NetworkServiceSelectMenuSequence_Menu::return_sequence();
+    BasicMenu_Result::close_cancel()
 }
 
 #[unity2::callback]
@@ -222,9 +223,6 @@ pub extern "C" fn language_create_menu_bind(proc: MainMenuSequence_LanguageSetti
     // basic.create_bind(proc, basic.create_default_desc(), "Dialog");
     // // BasicDialog::create_basic_dialog_bind(proc, list);
     let transform = proc.m_layout_prefab().get_transform();
-    let rect = transform.get_game_object().get_component::<RectTransform>();
-    rect.set_position(Vector3 { x: -312.0, y: -318.0, z: 0.0 });
-    rect.set_anchored_position(Vector2 { x: -312.0, y: -318.0 });
     let menu_transform = transform.find("Menu");
     let menu_go = menu_transform.get_game_object();
 
@@ -270,6 +268,7 @@ pub extern "C" fn boon_bane_create_menu_bind(proc: MainMenuSequence_NetworkServi
     let language = MainMenuSequence_LanguageSettingMenuSequence::new();
 
     let descs = language.get_proc_desc();
+    descs.set(1, Proc::call_2(ProcVoidMethod::from_fn(proc.as_instance(), boon_bane_set_title_bar).unwrap()));
     descs.set(5, Proc::call(ProcVoidFunction::from_fn(language.as_instance(), language_create_menu_bind).unwrap()));
 
     language.create_bind(proc, descs, Il2CppString::null());
