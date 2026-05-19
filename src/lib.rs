@@ -8,7 +8,7 @@ use engage_il2cpp::system::collections::generic::{IList_1Methods, List_1};
 use engage_il2cpp::unity_engine::{IComponentMethods, IGameObjectMethods, IRectTransformMethods, ITransformMethods, RectTransform, Vector2};
 use structs_types::*;
 
-use engage_il2cpp::app::{BasicMenu_Result, IBasicMenuItem, IBasicMenuItemMethods, IBasicMenuMethods, IMainMenuSequence, IMainMenuSequence_LanguageSettingMenuSequence_Menu, IMainMenuSequence_LanguageSettingMenuSequenceMethods, IMainMenuSequence_MenuSequenceBase, IMainMenuSequence_MenuSequenceBaseMethods, ISingletonProcInst_1Methods, MainMenuSequence_Label, MainMenuSequence_LanguageSettingMenuSequence_Menu, MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MessMenuItem, MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, MainMenuSequence_NetworkServiceSelectMenuSequence_Menu};
+use engage_il2cpp::app::{BasicMenu_Result, IBasicMenuItem, IBasicMenuItemMethods, IBasicMenuMethods, IMainMenuSequence, IMainMenuSequence_LanguageSettingMenuSequence_Menu, IMainMenuSequence_LanguageSettingMenuSequenceMethods, IMainMenuSequence_MenuSequenceBase, IMainMenuSequence_MenuSequenceBaseMethods, ISingletonProcInst_1Methods, MainMenuSequence_Label, MainMenuSequence_LanguageSettingMenuSequence_Menu, MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MessMenuItem, MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, MainMenuSequence_NetworkServiceSelectMenuSequence_Menu, Mess};
 use engage_il2cpp::app::procinst::{IProcInst, IProcInstMethods, ProcInst};
 use engage_il2cpp::app::procvoidfunction::ProcVoidFunction ;
 use engage_il2cpp::app::procvoidmethod::ProcVoidMethod;
@@ -181,7 +181,8 @@ pub fn check_and_validate_person_data()
 }
 
 pub extern "C" fn boon_bane_set_title_bar(_proc: ProcInst, _method_info: OptionalMethod) {
-    TitleBar::get_instance().open_header("Boon and Banes", Il2CppString::null(), "KHID_汎用");
+    // let title = Mess::get("MID_HERE");
+    TitleBar::get_instance().open_header("Boon and Bane", Il2CppString::null(), "KHID_汎用");
 }
 
 #[unity2::callback]
