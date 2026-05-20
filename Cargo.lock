@@ -23,7 +23,7 @@ dependencies = [
 [[package]]
 name = "engage-il2cpp"
 version = "0.1.0"
-source = "git+https://github.com/DivineDragonFanClub/engage-il2cpp#ad3554b5e77d5972f43128250f4fbb8db8daf62c"
+source = "git+https://github.com/DivineDragonFanClub/engage-il2cpp#0253c72baf56ed7fdd127cd2ae308730878ce96c"
 dependencies = [
  "lazysimd",
  "skyline",
@@ -142,7 +142,7 @@ checksum = "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75"
 [[package]]
 name = "unity-macro"
 version = "0.1.0"
-source = "git+https://github.com/DivineDragonFanClub/unity2#0d9faf3408d996ee12f9b9aebddeb3fc274a5206"
+source = "git+https://github.com/DivineDragonFanClub/unity2#1a14cb11eb0f8e7bff1fc1fb80e8e4451e36ad1c"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -152,7 +152,7 @@ dependencies = [
 [[package]]
 name = "unity2"
 version = "0.1.0"
-source = "git+https://github.com/DivineDragonFanClub/unity2#0d9faf3408d996ee12f9b9aebddeb3fc274a5206"
+source = "git+https://github.com/DivineDragonFanClub/unity2#1a14cb11eb0f8e7bff1fc1fb80e8e4451e36ad1c"
 dependencies = [
  "lazysimd",
  "skyline",

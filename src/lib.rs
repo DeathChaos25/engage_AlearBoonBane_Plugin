@@ -5,15 +5,17 @@ use cobapi::{
 
 mod structs_types;
 use engage_il2cpp::system::collections::generic::{IList_1Methods, List_1};
-use engage_il2cpp::unity_engine::{IComponentMethods, IGameObjectMethods, IRectTransformMethods, ITransformMethods, RectTransform, Vector2};
+use engage_il2cpp::unity_engine::component::IComponentMethods;
+use engage_il2cpp::unity_engine::gameobject::IGameObjectMethods;
+use engage_il2cpp::unity_engine::transform::ITransformMethods;
 use structs_types::*;
-use unity2::il2cpp::OptionalMethod;
+use unity2::OptionalMethod;
 
-use engage_il2cpp::app::{BasicMenu_Result, IBasicMenuItem, IBasicMenuItemMethods, IBasicMenuMethods, IMainMenuSequence, IMainMenuSequence_LanguageSettingMenuSequence_Menu, IMainMenuSequence_LanguageSettingMenuSequenceMethods, IMainMenuSequence_MenuSequenceBase, IMainMenuSequence_MenuSequenceBaseMethods, ISingletonProcInst_1Methods, MainMenuSequence_Label, MainMenuSequence_LanguageSettingMenuSequence_Menu, MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MessMenuItem, MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, MainMenuSequence_NetworkServiceSelectMenuSequence_Menu, Mess};
+use engage_il2cpp::app::{BasicMenu_Result, IBasicMenuItem, IBasicMenuMethods, IMainMenuSequence, IMainMenuSequence_LanguageSettingMenuSequence_Menu, IMainMenuSequence_MenuSequenceBase, IMainMenuSequence_MenuSequenceBaseMethods, ISingletonProcInst_1Methods, MainMenuSequence_Label, MainMenuSequence_LanguageSettingMenuSequence_Menu, MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MessMenuItem, MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, MainMenuSequence_NetworkServiceSelectMenuSequence_Menu, Mess};
 use engage_il2cpp::app::procinst::{IProcInst, IProcInstMethods, ProcInst};
-use engage_il2cpp::app::procvoidfunction::ProcVoidFunction ;
+use engage_il2cpp::app::procvoidfunction::ProcVoidFunction;
 use engage_il2cpp::app::procvoidmethod::ProcVoidMethod;
-use unity2::{Array, Cast, Il2CppString, IlInstance, OptionalMethod, SystemObject};
+use unity2::{Cast, Il2CppString, SystemObject};
 
 use std::sync::{atomic::{AtomicI32, Ordering}, OnceLock};
 use engage_il2cpp::ext::{GameVariableManager, ProcVoidMethodExt};
@@ -21,7 +23,7 @@ use engage_il2cpp::app::{jobdata::{IJobDataMethods, JobData}, persondata::{IPers
 use engage_il2cpp::app::structdata_1::IStructData_1Methods;
 use engage_il2cpp::{List_1Ext, ProcVoidFunctionExt};
 use engage_il2cpp::app::capabilitybase_1::ICapabilityBase_1Methods;
-use engage_il2cpp::app::mainmenusequence::{ MainMenuSequence_NetworkServiceSelectMenuSequence};
+use engage_il2cpp::app::mainmenusequence::MainMenuSequence_NetworkServiceSelectMenuSequence;
 use engage_il2cpp::app::proc::Proc;
 use engage_il2cpp::app::titlebar::{ITitleBarMethods, TitleBar};
 use engage_il2cpp::app::mainmenusequence::MainMenuSequence;
