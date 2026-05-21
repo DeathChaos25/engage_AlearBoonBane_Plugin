@@ -36,7 +36,7 @@ use engage_il2cpp::app::mainmenusequence::MainMenuSequence_LanguageSettingMenuSe
 
 static BACKUP_PERSON_DATA_STATS: OnceLock<PersonDataStats> = OnceLock::new();
 static BOON_TYPE: AtomicI32 = AtomicI32::new(BoonBaneType::Hp as i32);
-static BANE_TYPE: AtomicI32 = AtomicI32::new(BoonBaneType::Hp as i32);
+static BANE_TYPE: AtomicI32 = AtomicI32::new(BoonBaneType::Str as i32);
 
 static MID_BOON_ARRAY: [&str; 8] = [
     "MID_BOON_HP",
@@ -309,6 +309,16 @@ pub extern "C" fn boon_key_call(this: MainMenuSequence_LanguageSettingMenuSequen
         new_index = 0;
     }
 
+    if new_index == BANE_TYPE.load(Ordering::Relaxed) {
+        if left_pressed { new_index -= 1; }
+        if right_pressed { new_index += 1; }
+        if new_index < 0 {
+            new_index = BOON_BANE_COUNT - 1;
+        } else if new_index >= BOON_BANE_COUNT {
+            new_index = 0;
+        }
+    }
+
     menu.set_m_lang_voice_index_old(old_index);
     menu.set_m_lang_voice_index(new_index);
     BOON_TYPE.store(new_index, Ordering::Relaxed);
@@ -319,6 +329,62 @@ pub extern "C" fn boon_key_call(this: MainMenuSequence_LanguageSettingMenuSequen
 
     content.m_name_text().set_text(boon_get_name(this, None));
     content.m_param_text().set_text(boon_get_param_name(this, None));
+
+    if old_index != new_index {
+        let null_character = <Character as FromIlInstance>::from_il_instance(IlInstance::null());
+        GameSound::post_event("Select", null_character);
+    }
+
+    BasicMenu_Result::pass()
+}
+
+#[unity2::callback]
+pub extern "C" fn bane_key_call(this: MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, _method_info: OptionalMethod) -> BasicMenu_Result {
+    let any_left = Pad::any_left();
+    let any_right = Pad::any_right();
+    let left_pressed = Pad::is_repeat(any_left);
+    let right_pressed = Pad::is_repeat(any_right);
+
+    if !left_pressed && !right_pressed {
+        return BasicMenu_Result::pass();
+    }
+
+    let menu = this.m_menu()
+        .try_cast::<MainMenuSequence_LanguageSettingMenuSequence_Menu>()
+        .unwrap();
+
+    let old_index = menu.m_lang_mess_index();
+    let mut new_index = old_index;
+
+    if left_pressed { new_index -= 1; }
+    if right_pressed { new_index += 1; }
+
+    if new_index < 0 {
+        new_index = BOON_BANE_COUNT - 1;
+    } else if new_index >= BOON_BANE_COUNT {
+        new_index = 0;
+    }
+
+    if new_index == BOON_TYPE.load(Ordering::Relaxed) {
+        if left_pressed { new_index -= 1; }
+        if right_pressed { new_index += 1; }
+        if new_index < 0 {
+            new_index = BOON_BANE_COUNT - 1;
+        } else if new_index >= BOON_BANE_COUNT {
+            new_index = 0;
+        }
+    }
+
+    menu.set_m_lang_mess_index_old(old_index);
+    menu.set_m_lang_mess_index(new_index);
+    BANE_TYPE.store(new_index, Ordering::Relaxed);
+
+    let content = this.m_menu_item_content()
+        .try_cast::<MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItemContent>()
+        .unwrap();
+
+    content.m_name_text().set_text(bane_get_name(this, None));
+    content.m_param_text().set_text(bane_get_param_name(this, None));
 
     if old_index != new_index {
         let null_character = <Character as FromIlInstance>::from_il_instance(IlInstance::null());
@@ -352,11 +418,14 @@ pub extern "C" fn language_create_menu_bind(proc: MainMenuSequence_LanguageSetti
     new_class.override_virtual_method("GetParamName", bane_get_param_name_method_info());
     new_class.override_virtual_method("ACall", menuitem_a_call_method_info());
     new_class.override_virtual_method("BCall", menuitem_b_call_method_info());
+    new_class.override_virtual_method("KeyCall", bane_key_call_method_info());
 
     menu_item_list.add(boon_item.into());
     menu_item_list.add(bane_item.into());
 
     let menu = MainMenuSequence_LanguageSettingMenuSequence_Menu::new(menu_item_list, menu_content.into());
+    menu.set_m_lang_voice_index(BOON_TYPE.load(Ordering::Relaxed));
+    menu.set_m_lang_mess_index(BANE_TYPE.load(Ordering::Relaxed));
     let descs = menu.create_default_desc();
 
     menu.create_bind(proc, descs, Il2CppString::null());
