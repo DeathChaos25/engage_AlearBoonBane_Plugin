@@ -38,6 +38,27 @@ static BACKUP_PERSON_DATA_STATS: OnceLock<PersonDataStats> = OnceLock::new();
 static BOON_TYPE: AtomicI32 = AtomicI32::new(BoonBaneType::Hp as i32);
 static BANE_TYPE: AtomicI32 = AtomicI32::new(BoonBaneType::Hp as i32);
 
+static MID_BOON_ARRAY: [&str; 8] = [
+    "MID_BOON_HP",
+    "MID_BOON_STR",
+    "MID_BOON_MAG",
+    "MID_BOON_SKL",
+    "MID_BOON_SPD",
+    "MID_BOON_LCK",
+    "MID_BOON_DEF",
+    "MID_BOON_RES"
+];
+static MID_BANE_ARRAY: [&str; 8] = [
+    "MID_BANE_HP",
+    "MID_BANE_STR",
+    "MID_BANE_MAG",
+    "MID_BANE_SKL",
+    "MID_BANE_SPD",
+    "MID_BANE_LCK",
+    "MID_BANE_DEF",
+    "MID_BANE_RES"
+];
+
 extern "C" fn my_system_event_listener(event: &Event<SystemEvent>) 
 {
     if let Event::Args(ev) = event 
@@ -193,9 +214,14 @@ pub fn check_and_validate_person_data()
     }
 }
 
-pub extern "C" fn boon_bane_set_title_bar(_proc: ProcInst, _method_info: OptionalMethod) {
+pub extern "C" fn boon_bane_set_title_bar(_proc: ProcInst, _method_info: OptionalMethod) 
+{
+    let boon_name = Mess::get("MID_BOON_TITLE");
+    let bane_name = Mess::get("MID_BANE_TITLE");
+    Mess::set_argument_2(0, boon_name.to_string());
+    Mess::set_argument_2(1, bane_name.to_string());
     // let title = Mess::get("MID_HERE");
-    TitleBar::get_instance().open_header("Boon and Bane", Il2CppString::null(), "KHID_汎用");
+    TitleBar::get_instance().open_header(Mess::get("MID_BOON_BANE_TITLE"), Il2CppString::null(), "KHID_汎用");
 }
 
 #[skyline::hook(offset = 0x02285890)]
@@ -214,7 +240,7 @@ pub fn App_GameSaveDataUtil__Write(_super: u64, save_type: i32, slot_id: i32, re
 
 #[unity2::callback]
 pub extern "C" fn boon_get_name(this: MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, _method_info: OptionalMethod) -> Il2CppString {
-    "Boon".into()
+    Mess::get("MID_BOON_TITLE")
 }
 
 #[unity2::callback]
@@ -224,12 +250,12 @@ pub extern "C" fn boon_get_param_name(this: MainMenuSequence_LanguageSettingMenu
     let boon_index = menu.m_lang_voice_index();
     let boon_old_index = menu.m_lang_voice_index_old();
 
-    format!("Current value: {}", boon_index).into()
+    Mess::get(*MID_BOON_ARRAY.get(boon_index as usize).unwrap_or(&""))
 }
 
 #[unity2::callback]
 pub extern "C" fn bane_get_name(this: MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, _method_info: OptionalMethod) -> Il2CppString {
-    "Bane".into()
+    Mess::get("MID_BANE_TITLE")
 }
 
 #[unity2::callback]
@@ -239,7 +265,7 @@ pub extern "C" fn bane_get_param_name(this: MainMenuSequence_LanguageSettingMenu
     let bane_index = menu.m_lang_mess_index();
     let bane_old_index = menu.m_lang_mess_index_old();
 
-    "Very weak".into()
+    Mess::get(*MID_BANE_ARRAY.get(bane_index as usize).unwrap_or(&""))
 }
 
 #[unity2::callback]
@@ -254,7 +280,7 @@ pub extern "C" fn menuitem_b_call(_this: MainMenuSequence_LanguageSettingMenuSeq
     BasicMenu_Result::close_cancel()
 }
 
-const BOON_BANE_COUNT: i32 = 20;
+const BOON_BANE_COUNT: i32 = 8;
 
 #[unity2::callback]
 pub extern "C" fn boon_key_call(this: MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, _method_info: OptionalMethod) -> BasicMenu_Result {

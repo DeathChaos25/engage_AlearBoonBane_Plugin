@@ -16,10 +16,9 @@ unity2 = { git = "https://github.com/DivineDragonFanClub/unity2" }
 engage-il2cpp = { git = "https://github.com/DivineDragonFanClub/engage-il2cpp", features = [
     "app-basicmenu",
     "app-basicmenuitem",
-    "app-basicmenuitemcontent",
     "app-capabilitybase_1",
-    "app-gameuserdata",
     "app-gamesound",
+    "app-gameuserdata",
     "app-gamevariable",
     "app-jobdata",
     "app-mainmenusequence",
@@ -41,7 +40,6 @@ engage-il2cpp = { git = "https://github.com/DivineDragonFanClub/engage-il2cpp", 
     "tm_pro-tmp_text",
     "unity_engine-component",
     "unity_engine-gameobject",
-    "unity_engine-recttransform",
     "unity_engine-transform",
 ] }
 cobapi = { git = "https://github.com/DivineDragonFanClub/cobapi" } # Utilities to talk with Cobalt. When new methods are added, you might need to increase the version to use opt-in to them.
