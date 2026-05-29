@@ -2,6 +2,7 @@ use cobapi::{
     Event,
     SystemEvent,
 };
+use engage_il2cpp::system::reflection::methodinfo::MethodInfo;
 
 mod structs_types;
 use engage_il2cpp::system::collections::generic::{IList_1Methods, List_1};
@@ -9,9 +10,9 @@ use engage_il2cpp::unity_engine::component::IComponentMethods;
 use engage_il2cpp::unity_engine::gameobject::IGameObjectMethods;
 use engage_il2cpp::unity_engine::transform::ITransformMethods;
 use structs_types::*;
-use unity2::{Array, OptionalMethod};
+use unity2::{Array, ClassIdentity, OptionalMethod};
 
-use engage_il2cpp::app::{BasicMenu_Result, IBasicMenuItem, IBasicMenuMethods, IMainMenuSequence, IMainMenuSequence_HistoryInfo, IMainMenuSequence_HistoryInfo_WindowMethods, IMainMenuSequence_HistoryInfoMethods, IMainMenuSequence_LanguageSettingMenuSequence_Menu, IMainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItemContent, IMainMenuSequence_MenuSequenceBase, IMainMenuSequence_MenuSequenceBaseMethods, IMainMenuSequenceMethods, ISingletonProcInst_1Methods, MainMenuSequence_HistoryInfo, MainMenuSequence_HistoryInfo_InfoKind, MainMenuSequence_HistoryInfo_Window, MainMenuSequence_Label, MainMenuSequence_LanguageSettingMenuSequence_Menu, MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItemContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MessMenuItem, MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, MainMenuSequence_NetworkServiceSelectMenuSequence_Menu, Mess};
+use engage_il2cpp::app::{BasicMenu_Result, IBasicMenuItem, IBasicMenuMethods, IMainMenuSequence, IMainMenuSequence_HistoryInfo, IMainMenuSequence_HistoryInfo_WindowMethods, IMainMenuSequence_HistoryInfoMethods, IMainMenuSequence_LanguageSettingMenuSequence_Menu, IMainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItemContent, IMainMenuSequence_MenuSequenceBase, IMainMenuSequence_MenuSequenceBaseMethods, IMainMenuSequenceMethods, ISingletonProcInst_1Methods, MainMenuSequence_FinalConfirmDialog_YesDialogItem, MainMenuSequence_HistoryInfo, MainMenuSequence_HistoryInfo_InfoKind, MainMenuSequence_HistoryInfo_Window, MainMenuSequence_Label, MainMenuSequence_LanguageSettingMenuSequence_Menu, MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItemContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MessMenuItem, MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, MainMenuSequence_NetworkServiceSelectMenuSequence_Menu, MainMenuSequence_NetworkServiceSelectMenuSequence_Menu_NoMenuItem, Mess, NetEnableSequence};
 use engage_il2cpp::app::gameui::GameUI;
 use engage_il2cpp::app::resourcemanager_2::ResourceManager_2;
 use engage_il2cpp::app::ut::Ut;
@@ -29,7 +30,7 @@ use std::sync::{atomic::{AtomicI32, Ordering}, OnceLock};
 use engage_il2cpp::ext::{GameVariableManager, ProcVoidMethodExt};
 use engage_il2cpp::app::{jobdata::{IJobDataMethods, JobData}, persondata::{IPersonDataMethods, PersonData}};
 use engage_il2cpp::app::structdata_1::IStructData_1Methods;
-use engage_il2cpp::{List_1Ext, ProcVoidFunctionExt};
+use engage_il2cpp::{List_1Ext, ProcDescPatch, ProcExt, ProcVoidFunctionExt};
 use engage_il2cpp::app::capabilitybase_1::ICapabilityBase_1Methods;
 use engage_il2cpp::app::mainmenusequence::MainMenuSequence_NetworkServiceSelectMenuSequence;
 use engage_il2cpp::app::proc::Proc;
@@ -37,6 +38,8 @@ use engage_il2cpp::app::titlebar::{ITitleBarMethods, TitleBar};
 use engage_il2cpp::app::mainmenusequence::MainMenuSequence;
 use engage_il2cpp::app::mainmenusequence::MainMenuSequence_LanguageSettingMenuSequence;
 use engage_il2cpp::app::mainmenusequence::{MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItem, IMainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItem};
+use engage_il2cpp::app::mainmenusequence::MainMenuSequence_FinalConfirmDialog_NoDialogItem;
+use engage_il2cpp::app::netenablesequence::NetEnableSequence_ResultFunction;
 
 static BACKUP_PERSON_DATA_STATS: OnceLock<PersonDataStats> = OnceLock::new();
 static BOON_TYPE: AtomicI32 = AtomicI32::new(BoonBaneType::Hp as i32);
@@ -72,8 +75,9 @@ extern "C" fn my_system_event_listener(event: &Event<SystemEvent>)
             SystemEvent::GamedataLoaded => check_and_validate_person_data(),
             SystemEvent::SaveLoaded { ty, slot_id } => on_save_data_loaded(ty, slot_id),
             SystemEvent::ProcInstBind { proc, parent: _ } => {
-                if (*proc.borrow()).m_hash_code() == -1912552174 {
+                if proc.borrow().m_hash_code() == -1912552174 {
                     println!("Entering MainMenuSequence");
+                    on_mainmenusequence_bind(proc.borrow().try_cast().unwrap());
                 }
             }
             // This syntax means you do not intend to deal with the other events and will do nothing if they are received.
@@ -91,7 +95,7 @@ fn print_stat_block(label: &str, s: &PersonDataStats)
     println!("  Growths: {}", (0..9).map(|i| format!("{}={}", lbl[i], s.growths[i])).collect::<Vec<_>>().join(", ") );
 }
 
-pub fn on_save_data_loaded( save_type: &i32, slot_id: &i32 )
+pub fn on_save_data_loaded(save_type: &i32, slot_id: &i32)
 {
     if *save_type <= 1  { return; } // Only care about actual save files being loaded
 
@@ -218,6 +222,107 @@ pub fn check_and_validate_person_data()
     }
 }
 
+#[unity2::callback]
+pub extern "C" fn boon_bane_sequence_create_bind(proc: MainMenuSequence, _parent: ProcInst, _method_info: OptionalMethod) {
+    let language = MainMenuSequence_LanguageSettingMenuSequence::new();
+
+    let descs = language.get_proc_desc();
+    descs.set(1, Proc::call_2(ProcVoidMethod::from_fn(proc.as_instance(), boon_bane_set_title_bar).unwrap()));
+    descs.set(5, Proc::call(ProcVoidFunction::from_fn(language.as_instance(), language_create_menu_bind).unwrap()));
+
+    language.create_bind(proc, descs, Il2CppString::null());
+}
+
+#[unity2::callback]
+pub extern "C" fn networkserviceselect_nomenuitem_acall(proc: ProcInst, _method_info: OptionalMethod) -> BasicMenu_Result {
+    let instance = MainMenuSequence::get_instance();
+
+    instance.set_m_is_network_service(false);
+
+    // Clear and hide the Boon and Bane HistoryInfo
+    let history_info = instance.m_history_info();
+    history_info.set_history_text(MainMenuSequence_HistoryInfo_InfoKind::network_service(), proc.get_name());
+    history_info.show_window(MainMenuSequence_HistoryInfo_InfoKind::network_service());
+
+    // Tell the game to jump to our custom ProcDescLabel for the BoonBaneSequence
+    instance.set_m_next_sequence(MainMenuSequence_Label { value: 32 });
+
+    BasicMenu_Result::close_decide()
+}
+
+#[unity2::callback]
+pub extern "C" fn networklogin(proc: MainMenuSequence, is_enable: bool, _method_info: OptionalMethod) {
+    let mid = if is_enable {
+        proc.set_m_is_network_service(true);
+        proc.set_m_is_network_login_once(true);
+        "MID_GAMESTART_NETWORK_SERVICE_ON"
+    } else {
+        proc.set_m_is_network_service(false);
+        "MID_GAMESTART_NETWORK_SERVICE_OFF"
+    };
+
+    let text = Mess::get(mid);
+
+    let history_text = proc.m_history_info();
+    history_text.set_history_text(MainMenuSequence_HistoryInfo_InfoKind::network_service(), text);
+    history_text.show_window(MainMenuSequence_HistoryInfo_InfoKind::network_service());
+    proc.set_m_next_sequence(MainMenuSequence_Label { value: 32 });
+}
+
+#[unity2::callback]
+pub extern "C" fn mainmenusequence_networklogin(proc: MainMenuSequence, method_info: OptionalMethod) {
+    let resultfunction = NetEnableSequence_ResultFunction::new(proc.into(), networklogin_method_info().into());
+    NetEnableSequence::create_bind_new_play(proc, proc.m_is_network_login_once(), resultfunction);
+}
+
+#[unity2::callback]
+pub extern "C" fn finalconfirm_back(_proc: ProcInst, _method_info: OptionalMethod) -> BasicMenu_Result {
+    let instance = MainMenuSequence::get_instance();
+    // Tell the game to jump to our custom ProcDescLabel for the BoonBaneSequence
+    instance.set_m_next_sequence(MainMenuSequence_Label { value: 32 });
+    
+    // Clear and hide the Boon and Bane HistoryInfo
+    let history_info = instance.m_history_info();
+    history_info.clear_history_text(MainMenuSequence_HistoryInfo_InfoKind { value: 6 });
+    history_info.hide_window(MainMenuSequence_HistoryInfo_InfoKind { value: 6 });
+
+    BasicMenu_Result::close_cancel()
+}
+
+pub fn on_mainmenusequence_bind(proc: MainMenuSequence) {
+    MainMenuSequence_NetworkServiceSelectMenuSequence_Menu_NoMenuItem::class()
+        .override_virtual_method("ACall", networkserviceselect_nomenuitem_acall_method_info()).unwrap();
+
+    MainMenuSequence_FinalConfirmDialog_YesDialogItem::class()
+        .override_virtual_method("BCall", finalconfirm_back_method_info()).unwrap();
+
+    MainMenuSequence_FinalConfirmDialog_NoDialogItem::class()
+        .override_virtual_method("BCall", finalconfirm_back_method_info()).unwrap();
+
+    MainMenuSequence_FinalConfirmDialog_NoDialogItem::class()
+        .override_virtual_method("ACall", finalconfirm_back_method_info()).unwrap();
+
+    let descs = proc.m_descs();
+
+    // Replace the NetworkLogin function by our own so we can replace the ResultFunction callback
+    descs.set(0x45, Proc::call_method(ProcVoidMethod::from_fn(proc.as_instance(), mainmenusequence_networklogin).unwrap()));
+
+    let new_descs = ProcDescPatch::new(descs)
+        // Custom label 32 sits between NetworkLogin and FinalConfirm and gets jumped over by JumpToNextSequence so that's fine.
+        // Label 31 is already used by Cobalt so we just avoid it for now.
+        .insert(
+            0x46,
+            [
+                Proc::label(32),
+                Proc::call_function(ProcVoidFunction::from_fn(proc.as_instance(), boon_bane_sequence_create_bind).unwrap()),
+                Proc::call_method(ProcVoidMethod::from_raw_parts(proc.as_instance(), MainMenuSequence::jump_to_next_sequence_method_info()).unwrap()),
+            ],
+        )
+        .finish();
+
+    proc.set_m_descs(new_descs);
+}
+
 pub extern "C" fn boon_bane_set_title_bar(_proc: ProcInst, _method_info: OptionalMethod) 
 {
     let boon_name = Mess::get("MID_BOON_TITLE");
@@ -286,11 +391,12 @@ pub extern "C" fn menuitem_a_call(_this: MainMenuSequence_LanguageSettingMenuSeq
 
 #[unity2::callback]
 pub extern "C" fn menuitem_b_call(_this: MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItem, _method_info: OptionalMethod) -> BasicMenu_Result {
+    // Clear the Network HistoryInfo before going back to it
     let history_info = MainMenuSequence::get_instance().m_history_info();
-    history_info.clear_history_text(MainMenuSequence_HistoryInfo_InfoKind { value: 6 });
-    history_info.hide_window(MainMenuSequence_HistoryInfo_InfoKind { value: 6 });
+    history_info.clear_history_text(MainMenuSequence_HistoryInfo_InfoKind::network_service());
+    history_info.hide_window(MainMenuSequence_HistoryInfo_InfoKind::network_service());
 
-    MainMenuSequence_NetworkServiceSelectMenuSequence_Menu::return_sequence();
+    MainMenuSequence::get_instance().set_m_next_sequence(MainMenuSequence_Label::network_service_select());
     BasicMenu_Result::close_cancel()
 }
 
@@ -546,5 +652,5 @@ pub fn main() {
 
     println!("Hello from skyline plugin AlearBoonBane");
     cobapi::register_system_event_handler(my_system_event_listener);
-    skyline::install_hooks!(network_service_select_hook, App_GameSaveDataUtil__Write, historyinfo_ctor, historyinfo_setup);
+    skyline::install_hooks!(App_GameSaveDataUtil__Write, historyinfo_ctor, historyinfo_setup);
 }
