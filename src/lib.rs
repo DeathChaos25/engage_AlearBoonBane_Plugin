@@ -9,9 +9,13 @@ use engage_il2cpp::unity_engine::component::IComponentMethods;
 use engage_il2cpp::unity_engine::gameobject::IGameObjectMethods;
 use engage_il2cpp::unity_engine::transform::ITransformMethods;
 use structs_types::*;
-use unity2::OptionalMethod;
+use unity2::{Array, OptionalMethod};
 
-use engage_il2cpp::app::{BasicMenu_Result, IBasicMenuItem, IBasicMenuMethods, IMainMenuSequence, IMainMenuSequence_LanguageSettingMenuSequence_Menu, IMainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItemContent, IMainMenuSequence_MenuSequenceBase, IMainMenuSequence_MenuSequenceBaseMethods, ISingletonProcInst_1Methods, MainMenuSequence_Label, MainMenuSequence_LanguageSettingMenuSequence_Menu, MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItemContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MessMenuItem, MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, MainMenuSequence_NetworkServiceSelectMenuSequence_Menu, Mess};
+use engage_il2cpp::app::{BasicMenu_Result, IBasicMenuItem, IBasicMenuMethods, IMainMenuSequence, IMainMenuSequence_HistoryInfo, IMainMenuSequence_HistoryInfo_WindowMethods, IMainMenuSequence_HistoryInfoMethods, IMainMenuSequence_LanguageSettingMenuSequence_Menu, IMainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItemContent, IMainMenuSequence_MenuSequenceBase, IMainMenuSequence_MenuSequenceBaseMethods, IMainMenuSequenceMethods, ISingletonProcInst_1Methods, MainMenuSequence_HistoryInfo, MainMenuSequence_HistoryInfo_InfoKind, MainMenuSequence_HistoryInfo_Window, MainMenuSequence_Label, MainMenuSequence_LanguageSettingMenuSequence_Menu, MainMenuSequence_LanguageSettingMenuSequence_Menu_ConfirmDialog, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItemContent, MainMenuSequence_LanguageSettingMenuSequence_Menu_MessMenuItem, MainMenuSequence_LanguageSettingMenuSequence_Menu_VoiceMenuItem, MainMenuSequence_NetworkServiceSelectMenuSequence_Menu, Mess};
+use engage_il2cpp::app::gameui::GameUI;
+use engage_il2cpp::app::resourcemanager_2::ResourceManager_2;
+use engage_il2cpp::app::ut::Ut;
+use engage_il2cpp::unity_engine::animator::{Animator, IAnimatorMethods};
 use engage_il2cpp::app::pad::Pad;
 use engage_il2cpp::app::gamesound::GameSound;
 use engage_il2cpp::combat::character::Character;
@@ -32,7 +36,7 @@ use engage_il2cpp::app::proc::Proc;
 use engage_il2cpp::app::titlebar::{ITitleBarMethods, TitleBar};
 use engage_il2cpp::app::mainmenusequence::MainMenuSequence;
 use engage_il2cpp::app::mainmenusequence::MainMenuSequence_LanguageSettingMenuSequence;
-use engage_il2cpp::app::mainmenusequence::MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItem;
+use engage_il2cpp::app::mainmenusequence::{MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItem, IMainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItem};
 
 static BACKUP_PERSON_DATA_STATS: OnceLock<PersonDataStats> = OnceLock::new();
 static BOON_TYPE: AtomicI32 = AtomicI32::new(BoonBaneType::Hp as i32);
@@ -270,12 +274,22 @@ pub extern "C" fn bane_get_param_name(this: MainMenuSequence_LanguageSettingMenu
 
 #[unity2::callback]
 pub extern "C" fn menuitem_a_call(_this: MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItem, _method_info: OptionalMethod) -> BasicMenu_Result {
-    MainMenuSequence::get_instance().set_m_next_sequence(MainMenuSequence_Label::final_confirm());
+    let instance = MainMenuSequence::get_instance();
+    let history_info = instance.m_history_info();
+
+    history_info.set_history_text(MainMenuSequence_HistoryInfo_InfoKind { value: 6 }, "Peepee poopoo");
+    history_info.show_window(MainMenuSequence_HistoryInfo_InfoKind { value: 6 });
+
+    instance.set_m_next_sequence(MainMenuSequence_Label::final_confirm());
     BasicMenu_Result::close_decide()
 }
 
 #[unity2::callback]
 pub extern "C" fn menuitem_b_call(_this: MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItem, _method_info: OptionalMethod) -> BasicMenu_Result {
+    let history_info = MainMenuSequence::get_instance().m_history_info();
+    history_info.clear_history_text(MainMenuSequence_HistoryInfo_InfoKind { value: 6 });
+    history_info.hide_window(MainMenuSequence_HistoryInfo_InfoKind { value: 6 });
+
     MainMenuSequence_NetworkServiceSelectMenuSequence_Menu::return_sequence();
     BasicMenu_Result::close_cancel()
 }
@@ -464,6 +478,45 @@ pub fn network_service_select_hook(parent: MainMenuSequence, method_info: Option
     proc.create_bind(parent, descs, Il2CppString::null());
 }
 
+#[unity2::hook("App", "MainMenuSequence.HistoryInfo", ".ctor")]
+pub fn historyinfo_ctor(this: MainMenuSequence_HistoryInfo, _method_info: OptionalMethod) {
+    // Make the array larger
+    this.set_m_window(Array::of_len(7).unwrap());
+}
+
+#[unity2::hook("App", "MainMenuSequence.HistoryInfo", "Setup")]
+pub fn historyinfo_setup(this: MainMenuSequence_HistoryInfo, _method_info: OptionalMethod) {
+    let root_transform = GameUI::get_root().get_transform();
+    let layout = ResourceManager_2::instantiate_2(
+        Il2CppString::new("UI/Title/StartMenu/Prefabs/HistoryRoot"),
+        root_transform,
+    );
+    this.set_m_layout_prefab(layout);
+
+    let windows = this.m_window();
+    let grow_mode_enabled = MainMenuSequence::get_instance().is_grow_mode_select_enable();
+
+    for i in 0..windows.max_length() {
+        let child_name = Il2CppString::new(format!("History{}", i));
+        let child_go = Ut::find_child_game_object_2(layout, child_name);
+        let window = MainMenuSequence_HistoryInfo_Window::new(
+            child_go,
+            MainMenuSequence_HistoryInfo_InfoKind { value: i as i32 },
+        );
+        windows.set(i, window);
+        window.clear_history_text();
+        window.hide();
+        if i == 3 && !grow_mode_enabled {
+            window.disable();
+        }
+    }
+
+    let menu_go = Ut::find_child_game_object_2(layout, Il2CppString::new("Menu"));
+    let animator = menu_go.get_component::<Animator>();
+    this.set_m_menu_animator(animator);
+    animator.play_2(Il2CppString::new("Closed"));
+}
+
 #[skyline::main(name = "alear_boon_bane")]
 pub fn main() {
     std::panic::set_hook(Box::new(|info| {
@@ -493,5 +546,5 @@ pub fn main() {
 
     println!("Hello from skyline plugin AlearBoonBane");
     cobapi::register_system_event_handler(my_system_event_listener);
-    skyline::install_hooks!(network_service_select_hook, App_GameSaveDataUtil__Write);
+    skyline::install_hooks!(network_service_select_hook, App_GameSaveDataUtil__Write, historyinfo_ctor, historyinfo_setup);
 }

@@ -23,9 +23,8 @@ dependencies = [
 [[package]]
 name = "engage-il2cpp"
 version = "0.1.0"
-source = "git+https://github.com/DivineDragonFanClub/engage-il2cpp#0253c72baf56ed7fdd127cd2ae308730878ce96c"
+source = "git+https://github.com/DivineDragonFanClub/engage-il2cpp#d841980b7df2ca1e3b3cc5c93415c784e57ccc03"
 dependencies = [
- "lazysimd",
  "skyline",
  "unity2",
 ]
@@ -39,21 +38,8 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 [[package]]
 name = "lazysimd"
 version = "0.1.0"
-source = "git+https://github.com/Raytwo/lazysimd#acb8a36063efd73f0a0116cbbea950209d7444d0"
-dependencies = [
- "lazysimd_macro",
- "skyline",
-]
-
-[[package]]
-name = "lazysimd_macro"
-version = "0.1.0"
-source = "git+https://github.com/Raytwo/lazysimd#acb8a36063efd73f0a0116cbbea950209d7444d0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.117",
-]
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "835be3adea8395b2d81a7688c72ea6ddc958b311dbe8ecffcf07f321e242a3c3"
 
 [[package]]
 name = "libc-nnsdk"
@@ -108,7 +94,7 @@ dependencies = [
  "lazy_static",
  "proc-macro2",
  "quote",
- "syn 1.0.109",
+ "syn",
 ]
 
 [[package]]
@@ -116,17 +102,6 @@ name = "syn"
 version = "1.0.109"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b64191b275b66ffe2469e8af2c1cfe3bafa67b529ead792a6d0160888b4237"
-dependencies = [
- "proc-macro2",
- "quote",
- "unicode-ident",
-]
-
-[[package]]
-name = "syn"
-version = "2.0.117"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e665b8803e7b1d2a727f4023456bbbbe74da67099c585258af0ad9c5013b9b99"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -142,7 +117,7 @@ checksum = "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75"
 [[package]]
 name = "unity-macro"
 version = "0.1.0"
-source = "git+https://github.com/DivineDragonFanClub/unity2#1a14cb11eb0f8e7bff1fc1fb80e8e4451e36ad1c"
+source = "git+https://github.com/DivineDragonFanClub/unity2#00724eac6a00adc205bd33b08570bacd89219b4a"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -152,7 +127,7 @@ dependencies = [
 [[package]]
 name = "unity2"
 version = "0.1.0"
-source = "git+https://github.com/DivineDragonFanClub/unity2#1a14cb11eb0f8e7bff1fc1fb80e8e4451e36ad1c"
+source = "git+https://github.com/DivineDragonFanClub/unity2#00724eac6a00adc205bd33b08570bacd89219b4a"
 dependencies = [
  "lazysimd",
  "skyline",
