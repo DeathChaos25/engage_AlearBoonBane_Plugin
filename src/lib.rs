@@ -24,7 +24,7 @@ use engage_il2cpp::tm_pro::tmp_text::ITMP_TextMethods;
 use engage_il2cpp::app::procinst::{IProcInst, IProcInstMethods, ProcInst};
 use engage_il2cpp::app::procvoidfunction::ProcVoidFunction;
 use engage_il2cpp::app::procvoidmethod::ProcVoidMethod;
-use unity2::{Cast, FromIlInstance, Il2CppString, IlInstance, SystemObject};
+use unity2::{Cast, FromIlInstance, Il2CppString, IlInstance, IlNull, SystemObject};
 
 use std::sync::{atomic::{AtomicI32, Ordering}, OnceLock};
 use engage_il2cpp::ext::{GameVariableManager, ProcVoidMethodExt};
@@ -451,7 +451,7 @@ pub extern "C" fn boon_key_call(this: MainMenuSequence_LanguageSettingMenuSequen
     content.m_param_text().set_text(boon_get_param_name(this, None));
 
     if old_index != new_index {
-        let null_character = <Character as FromIlInstance>::from_il_instance(IlInstance::null());
+        let null_character = Character::null();
         GameSound::post_event("Select", null_character);
     }
 
@@ -507,7 +507,7 @@ pub extern "C" fn bane_key_call(this: MainMenuSequence_LanguageSettingMenuSequen
     content.m_param_text().set_text(bane_get_param_name(this, None));
 
     if old_index != new_index {
-        let null_character = <Character as FromIlInstance>::from_il_instance(IlInstance::null());
+        let null_character = Character::null();
         GameSound::post_event("Select", null_character);
     }
 
@@ -654,3 +654,4 @@ pub fn main() {
     cobapi::register_system_event_handler(my_system_event_listener);
     skyline::install_hooks!(App_GameSaveDataUtil__Write, historyinfo_ctor, historyinfo_setup);
 }
+use engage_il2cpp::app::godunit::GodUnit; use unity2::IlInstance; fn _t() { let _g = GodUnit(IlInstance::null()); }
