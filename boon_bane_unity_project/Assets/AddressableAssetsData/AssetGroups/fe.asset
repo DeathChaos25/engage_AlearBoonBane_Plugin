@@ -1,0 +1,151 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: fe
+  m_EditorClassIdentifier: 
+  m_GroupName: fe
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 94944f708e5906c468526939828b9e53
+  m_SerializeEntries:
+  - m_GUID: bfdc2b361d2444d45b8aae1f9bd77861
+    m_Address: CustomRP/Shaders/Chara/CharaStandard.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 756e72b8abfe21245a2423a9174e3579
+    m_Address: CustomRP/Shaders/Chara/CharaTrans.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f0ad9def67a5e1f4ea6058d223a307cc
+    m_Address: CustomRP/Shaders/Common/Shadow.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 67037e03caa484243943b3b4e86b90e9
+    m_Address: CustomRP/Shaders/Chara/CharaHair.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f1f7bc3ac97980b4e88ba3fb1cdc8d03
+    m_Address: CustomRP/Shaders/Chara/CharaEye.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 477d4b008dfbb114a9eaa9fdbecaac05
+    m_Address: CustomRP/Shaders/Map/MapStandard.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 63bfe1bf740976941a373aaabe4cceb6
+    m_Address: CustomRP/Shaders/Map/MapLeaf.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d4092d66e4ded6b46864c54da65cf525
+    m_Address: CustomRP/Shaders/Map/MapCloth.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c2d737676f32a3a4bbc9cd2e4bc3629e
+    m_Address: CustomRP/Shaders/Map/MapBlend.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a35b819c50b86704093c58c08ddc54f9
+    m_Address: CustomRP/Shaders/Map/MapBakedTerrain.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9427ccdce59f1fd4b94c45dde2b282cc
+    m_Address: CustomRP/Shaders/Map/MapBackground.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: dba352a3f4d9b0b43b58fd49fbc03ff9
+    m_Address: CustomRP/Shaders/Chara/CharaBmap.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 58713cbad713c3540b74ccb6741e054a
+    m_Address: CustomRP/Shaders/Particles/ParticlesStandard.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b7a724a8c6c6aea4481f1fe393c3294e
+    m_Address: CustomRP/Shaders/Chara/CharaBrow.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 5394837df4c963c4cb414f8f8581bb86
+    m_Address: CustomRP/Shaders/Chara/CharaJewel.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4512f6be030d2ad46aba6cdcdea8828f
+    m_Address: CustomRP/Shaders/Map/MapWater.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c2837fded00071241bbdf73b0e28813d
+    m_Address: Fonts/Help SDF
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - removePostBuild
+  - m_GUID: 94e479ca2d1af43c0a60c82c43765981
+    m_Address: CustomRP/Shaders/UI/UI_Add.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 433c9b1d8df004f589c129fae9969028
+    m_Address: CustomRP/Shaders/UI/UI_Text.shader
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 02bae4e719bc3c5469386c3c585acbca
+    m_Address: Fonts/HelpBold SDF
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - removePostBuild
+  - m_GUID: 7b7ea78b44ea671439602d7d0e494e3c
+    m_Address: Fonts/Status SDF
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - removePostBuild
+  - m_GUID: c77df79ff9e854e4ea86dfa05a27181c
+    m_Address: Fonts/System SDF
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - removePostBuild
+  - m_GUID: 8544225c2bb73b04faf2b19f69496652
+    m_Address: Fonts/SystemBold SDF
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - removePostBuild
+  - m_GUID: 2ca1f6999bedf6143bb7dfbbbd1f19d9
+    m_Address: Fonts/SystemBoldJP SDF
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - removePostBuild
+  - m_GUID: 5cedfb5cfcbceed40a814220c64e12aa
+    m_Address: Fonts/SystemCN SDF
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - removePostBuild
+  - m_GUID: 34f03f2b978e62945990018db94419d2
+    m_Address: Fonts/SystemJP SDF
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - removePostBuild
+  - m_GUID: 192cc8bbfd60a7b4d8fb6634dca5ff07
+    m_Address: Fonts/SystemKR SDF
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - removePostBuild
+  - m_GUID: 42c38ce090944784bbb07469d9d53561
+    m_Address: Fonts/SystemTW SDF
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - removePostBuild
+  - m_GUID: 598835c7db251c44ca39bfbf530a094f
+    m_Address: UI/Title/StartMenu/Prefabs/HistoryRoot
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 48df98a99aa853f4da26a0ba98752fd9, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: ebfa9395cdea7804bb642ee316ce606e, type: 2}
+    - {fileID: 11400000, guid: f2e5ebc84969ce34ebc7dd7f24e139d7, type: 2}
