@@ -290,16 +290,16 @@ pub extern "C" fn finalconfirm_back(_proc: ProcInst, _method_info: OptionalMetho
 
 pub fn on_mainmenusequence_bind(proc: MainMenuSequence) {
     MainMenuSequence_NetworkServiceSelectMenuSequence_Menu_NoMenuItem::class()
-        .override_virtual_method("ACall", networkserviceselect_nomenuitem_acall_method_info()).unwrap();
+        .override_virtual_method("ACall", networkserviceselect_nomenuitem_acall_method_info());
 
     MainMenuSequence_FinalConfirmDialog_YesDialogItem::class()
-        .override_virtual_method("BCall", finalconfirm_back_method_info()).unwrap();
+        .override_virtual_method("BCall", finalconfirm_back_method_info());
 
     MainMenuSequence_FinalConfirmDialog_NoDialogItem::class()
-        .override_virtual_method("BCall", finalconfirm_back_method_info()).unwrap();
+        .override_virtual_method("BCall", finalconfirm_back_method_info());
 
     MainMenuSequence_FinalConfirmDialog_NoDialogItem::class()
-        .override_virtual_method("ACall", finalconfirm_back_method_info()).unwrap();
+        .override_virtual_method("ACall", finalconfirm_back_method_info());
 
     let descs = proc.m_descs();
 
