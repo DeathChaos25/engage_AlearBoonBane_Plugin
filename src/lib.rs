@@ -381,7 +381,12 @@ pub extern "C" fn menuitem_a_call(_this: MainMenuSequence_LanguageSettingMenuSeq
     let instance = MainMenuSequence::get_instance();
     let history_info = instance.m_history_info();
 
-    history_info.set_history_text(MainMenuSequence_HistoryInfo_InfoKind { value: 6 }, "Peepee poopoo");
+    let boon_name = Mess::get(*MID_BOON_ARRAY.get(BOON_TYPE.load(Ordering::Relaxed) as usize).unwrap_or(&""));
+    let bane_name = Mess::get(*MID_BANE_ARRAY.get(BANE_TYPE.load(Ordering::Relaxed) as usize).unwrap_or(&""));
+    Mess::set_argument_2(0, boon_name.to_string());
+    Mess::set_argument_2(1, bane_name.to_string());
+
+    history_info.set_history_text(MainMenuSequence_HistoryInfo_InfoKind { value: 6 }, Mess::get("MID_BOON_BANE_RESULT"));
     history_info.show_window(MainMenuSequence_HistoryInfo_InfoKind { value: 6 });
 
     instance.set_m_next_sequence(MainMenuSequence_Label::final_confirm());
