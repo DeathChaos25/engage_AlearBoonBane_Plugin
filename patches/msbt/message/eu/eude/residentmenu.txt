@@ -1,5 +1,5 @@
 [MID_GAMESTART_BOON_BANE_TITLE]
-Boon / Bane
+Stärke / Schwä
 
 [MID_BOON_BANE_TITLE]
 $Arg(0) / $Arg(1)
@@ -8,55 +8,55 @@ $Arg(0) / $Arg(1)
 $Arg(0) / $Arg(1)
 
 [MID_BOON_TITLE]
-Boon
+Stärke
 
 [MID_BANE_TITLE]
-Bane
+Schwä
 
 [MID_BOON_HP]
 Robust
 
 [MID_BOON_STR]
-Strong
+Stark
 
 [MID_BOON_MAG]
-Clever
+Intelligent
 
 [MID_BOON_SKL]
-Deft
+Geschickt
 
 [MID_BOON_SPD]
-Quick
+Schnell
 
 [MID_BOON_LCK]
-Lucky
+Glücklich
 
 [MID_BOON_DEF]
-Sturdy
+Unbeugsam
 
 [MID_BOON_RES]
-Calm
+Gelassen
 
 [MID_BANE_HP]
-Sickly
+Kränklich
 
 [MID_BANE_STR]
-Weak
+Schwach
 
 [MID_BANE_MAG]
-Dull
+Träge
 
 [MID_BANE_SKL]
-Clumsy
+Ungelenk
 
 [MID_BANE_SPD]
-Slow
+Langsam
 
 [MID_BANE_LCK]
-Unlucky
+Glücklos
 
 [MID_BANE_DEF]
-Fragile
+Fragil
 
 [MID_BANE_RES]
-Excitable
+Reizbar

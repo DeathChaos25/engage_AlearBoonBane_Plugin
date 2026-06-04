@@ -1,5 +1,5 @@
 [MID_GAMESTART_BOON_BANE_TITLE]
-Boon / Bane
+Pregio / Difetto
 
 [MID_BOON_BANE_TITLE]
 $Arg(0) / $Arg(1)
@@ -8,55 +8,55 @@ $Arg(0) / $Arg(1)
 $Arg(0) / $Arg(1)
 
 [MID_BOON_TITLE]
-Boon
+Pregio
 
 [MID_BANE_TITLE]
-Bane
+Difetto
 
 [MID_BOON_HP]
-Robust
+Vitalità
 
 [MID_BOON_STR]
-Strong
+Forza
 
 [MID_BOON_MAG]
-Clever
+Ingegno
 
 [MID_BOON_SKL]
-Deft
+Destrezza
 
 [MID_BOON_SPD]
-Quick
+Rapidità
 
 [MID_BOON_LCK]
-Lucky
+Fortuna
 
 [MID_BOON_DEF]
-Sturdy
+Vigore
 
 [MID_BOON_RES]
-Calm
+Calma
 
 [MID_BANE_HP]
-Sickly
+Infermità
 
 [MID_BANE_STR]
-Weak
+Debolezza
 
 [MID_BANE_MAG]
-Dull
+Ottusità
 
 [MID_BANE_SKL]
-Clumsy
+Impaccio
 
 [MID_BANE_SPD]
-Slow
+Lentezza
 
 [MID_BANE_LCK]
-Unlucky
+Sfortuna
 
 [MID_BANE_DEF]
-Fragile
+Gracilità
 
 [MID_BANE_RES]
-Excitable
+Emotività

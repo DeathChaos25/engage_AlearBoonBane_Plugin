@@ -1,5 +1,5 @@
 [MID_GAMESTART_BOON_BANE_TITLE]
-Boon / Bane
+Don / Défaut
 
 [MID_BOON_BANE_TITLE]
 $Arg(0) / $Arg(1)
@@ -8,55 +8,55 @@ $Arg(0) / $Arg(1)
 $Arg(0) / $Arg(1)
 
 [MID_BOON_TITLE]
-Boon
+Don
 
 [MID_BANE_TITLE]
-Bane
+Défaut
 
 [MID_BOON_HP]
-Robust
+Santé
 
 [MID_BOON_STR]
-Strong
+Force
 
 [MID_BOON_MAG]
-Clever
+Astuce
 
 [MID_BOON_SKL]
-Deft
+Adresse
 
 [MID_BOON_SPD]
-Quick
+Vitesse
 
 [MID_BOON_LCK]
-Lucky
+Chance
 
 [MID_BOON_DEF]
-Sturdy
+Vigueur
 
 [MID_BOON_RES]
-Calm
+Calme
 
 [MID_BANE_HP]
-Sickly
+Fragilité
 
 [MID_BANE_STR]
-Weak
+Faiblesse
 
 [MID_BANE_MAG]
-Dull
+Candeur
 
 [MID_BANE_SKL]
-Clumsy
+Gaffe
 
 [MID_BANE_SPD]
-Slow
+Lenteur
 
 [MID_BANE_LCK]
-Unlucky
+Poisse
 
 [MID_BANE_DEF]
-Fragile
+Usure
 
 [MID_BANE_RES]
-Excitable
+Fébrilité

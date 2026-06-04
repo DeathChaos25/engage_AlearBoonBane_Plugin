@@ -1,5 +1,5 @@
 [MID_GAMESTART_BOON_BANE_TITLE]
-Boon / Bane
+Virtud / Defecto
 
 [MID_BOON_BANE_TITLE]
 $Arg(0) / $Arg(1)
@@ -8,55 +8,55 @@ $Arg(0) / $Arg(1)
 $Arg(0) / $Arg(1)
 
 [MID_BOON_TITLE]
-Boon
+Virtud
 
 [MID_BANE_TITLE]
-Bane
+Defecto
 
 [MID_BOON_HP]
-Robust
+Aguante
 
 [MID_BOON_STR]
-Strong
+Ímpetu
 
 [MID_BOON_MAG]
-Clever
+Intelecto
 
 [MID_BOON_SKL]
-Deft
+Destreza
 
 [MID_BOON_SPD]
-Quick
+Velocidad
 
 [MID_BOON_LCK]
-Lucky
+Suerte
 
 [MID_BOON_DEF]
-Sturdy
+Robustez
 
 [MID_BOON_RES]
-Calm
+Aplomo
 
 [MID_BANE_HP]
-Sickly
+Flaqueza
 
 [MID_BANE_STR]
-Weak
+Debilidad
 
 [MID_BANE_MAG]
-Dull
+Apatía
 
 [MID_BANE_SKL]
-Clumsy
+Torpeza
 
 [MID_BANE_SPD]
-Slow
+Lentitud
 
 [MID_BANE_LCK]
-Unlucky
+Infortunio
 
 [MID_BANE_DEF]
-Fragile
+Fragilidad
 
 [MID_BANE_RES]
-Excitable
+Ansiedad
