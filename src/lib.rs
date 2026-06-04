@@ -2,7 +2,6 @@ use cobapi::{
     Event,
     SystemEvent,
 };
-use engage_il2cpp::system::reflection::methodinfo::MethodInfo;
 
 mod structs_types;
 use engage_il2cpp::system::collections::generic::{IList_1Methods, List_1};
@@ -654,4 +653,3 @@ pub fn main() {
     cobapi::register_system_event_handler(my_system_event_listener);
     skyline::install_hooks!(App_GameSaveDataUtil__Write, historyinfo_ctor, historyinfo_setup);
 }
-use engage_il2cpp::app::godunit::GodUnit; use unity2::IlInstance; fn _t() { let _g = GodUnit(IlInstance::null()); }
