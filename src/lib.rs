@@ -94,14 +94,26 @@ fn print_stat_block(label: &str, s: &PersonDataStats)
     println!("  Growths: {}", (0..9).map(|i| format!("{}={}", lbl[i], s.growths[i])).collect::<Vec<_>>().join(", ") );
 }
 
-pub fn on_save_data_loaded(save_type: &i32, slot_id: &i32)
+pub fn patch_gamedata_with_boon_bane()
 {
-    if *save_type <= 1  { return; } // Only care about actual save files being loaded
+    let mut boon_type = return_as_boon_bane_type(GameVariableManager::get_number("alear_boon_type")) as i32;
+    let mut bane_type = return_as_boon_bane_type(GameVariableManager::get_number("alear_bane_type")) as i32;
 
-    println!("Save type #{} being loaded from slot #{}", save_type, slot_id);
+    if (boon_type as i32) == (bane_type as i32) 
+    {
+        println!("Uninitialized boon/bane types detected, attempting to fix.");
+        boon_type = BOON_TYPE.load(Ordering::Relaxed);
+        bane_type = BANE_TYPE.load(Ordering::Relaxed);
+        // this fixes the issue caused by skipping prologue and thus skipping the savedata
 
-    let boon_type = return_as_boon_bane_type(GameVariableManager::get_number("alear_boon_type"));
-    let bane_type = return_as_boon_bane_type(GameVariableManager::get_number("alear_bane_type"));
+        if (boon_type as i32) == (bane_type as i32) 
+        {
+            // user loaded an existing save without ever picking boon/bane
+            println!("Failed to fix boon/bane types, defaulting to MAG boon and DEF bane.");
+            boon_type = BoonBaneType::Mag as i32;
+            bane_type = BoonBaneType::Def as i32;
+        }
+    }
 
     BOON_TYPE.store(boon_type as i32, Ordering::Relaxed);
     BANE_TYPE.store(bane_type as i32, Ordering::Relaxed);
@@ -124,7 +136,7 @@ pub fn on_save_data_loaded(save_type: &i32, slot_id: &i32)
         let bases   = person.get_offset_l();
         let caps    = person.get_limit();
         let growths = person.get_grow();
-    
+
         bases.set_hp(combined.bases[0]);
         bases.set_str(combined.bases[1]);
         bases.set_magic(combined.bases[2]);
@@ -145,6 +157,10 @@ pub fn on_save_data_loaded(save_type: &i32, slot_id: &i32)
         caps.set_mdef(combined.caps[7]);
         caps.set_phys(combined.caps[8]);
     
+        println!("Growths before applying boon/bane:");
+        println!("  HP: {}, Str: {}, Mag: {}, Tech: {}, Quick: {}, Lck: {}, Def: {}, MDef: {}, Phys: {}", 
+            growths.get_hp(), growths.get_str(), growths.get_magic(), growths.get_tech(), growths.get_quick(), growths.get_luck(), growths.get_def(), growths.get_mdef(), growths.get_phys());
+    
         growths.set_hp(combined.growths[0]);
         growths.set_str(combined.growths[1]);
         growths.set_magic(combined.growths[2]);
@@ -154,7 +170,20 @@ pub fn on_save_data_loaded(save_type: &i32, slot_id: &i32)
         growths.set_def(combined.growths[6]);
         growths.set_mdef(combined.growths[7]);
         growths.set_phys(combined.growths[8]);
+
+        println!("Growths after applying boon/bane:");
+        println!("  HP: {}, Str: {}, Mag: {}, Tech: {}, Quick: {}, Lck: {}, Def: {}, MDef: {}, Phys: {}", 
+            growths.get_hp(), growths.get_str(), growths.get_magic(), growths.get_tech(), growths.get_quick(), growths.get_luck(), growths.get_def(), growths.get_mdef(), growths.get_phys());
     }
+}
+
+pub fn on_save_data_loaded(save_type: &i32, slot_id: &i32)
+{
+    if *save_type <= 1  { return; } // Only care about actual save files being loaded
+
+    println!("Save type #{} being loaded from slot #{}", save_type, slot_id);
+
+    patch_gamedata_with_boon_bane();
 }
 
 pub fn check_and_validate_person_data() 
@@ -343,6 +372,8 @@ pub fn App_GameSaveDataUtil__Write(_super: u64, save_type: i32, slot_id: i32, re
 
     println!("Current boon type is {:?} and bane type is {:?}", BOON_TYPE.load(Ordering::Relaxed), BANE_TYPE.load(Ordering::Relaxed));
 
+    patch_gamedata_with_boon_bane();
+    
     call_original!(_super, save_type, slot_id, result_header_callback, method_info);
 }
 

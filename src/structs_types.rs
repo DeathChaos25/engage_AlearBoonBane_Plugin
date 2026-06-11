@@ -141,7 +141,7 @@ static mut BANE_STATS: [PersonDataStats; 8] = [
     },
 ];
 
-pub fn get_boon_stats_by_type(stat_type: BoonBaneType) -> &'static PersonDataStats 
+pub fn get_boon_stats_by_type(stat_type: i32) -> &'static PersonDataStats 
 {
     unsafe 
     {
@@ -149,7 +149,7 @@ pub fn get_boon_stats_by_type(stat_type: BoonBaneType) -> &'static PersonDataSta
     }
 }
 
-pub fn get_bane_stats_by_type(stat_type: BoonBaneType) -> &'static PersonDataStats 
+pub fn get_bane_stats_by_type(stat_type: i32) -> &'static PersonDataStats 
 {
     unsafe 
     {
