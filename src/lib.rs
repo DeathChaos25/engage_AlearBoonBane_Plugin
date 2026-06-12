@@ -96,8 +96,8 @@ fn print_stat_block(label: &str, s: &PersonDataStats)
 
 pub fn patch_gamedata_with_boon_bane()
 {
-    let mut boon_type = GameVariableManager::get_number("G_alear_boon_type");
-    let mut bane_type = GameVariableManager::get_number("G_alear_bane_type");
+    let mut boon_type = GameVariableManager::get_number("G_ALEAR_BOON_TYPE");
+    let mut bane_type = GameVariableManager::get_number("G_ALEAR_BANE_TYPE");
 
     if boon_type == bane_type
     {
@@ -105,8 +105,8 @@ pub fn patch_gamedata_with_boon_bane()
         boon_type = BOON_TYPE.load(Ordering::Relaxed);
         bane_type = BANE_TYPE.load(Ordering::Relaxed);
         // this fixes the issue caused by skipping prologue and thus skipping the savedata
-        GameVariableManager::set_number("G_alear_boon_type", boon_type);
-        GameVariableManager::set_number("G_alear_bane_type", bane_type);
+        GameVariableManager::make_entry_norewind("G_ALEAR_BOON_TYPE", boon_type);
+        GameVariableManager::make_entry_norewind("G_ALEAR_BANE_TYPE", bane_type);
 
         if boon_type == bane_type
         {
@@ -363,12 +363,25 @@ pub extern "C" fn boon_bane_set_title_bar(_proc: ProcInst, _method_info: Optiona
 pub fn App_GameSaveDataUtil__Write(_super: u64, save_type: i32, slot_id: i32, result_header_callback: u64, method_info: OptionalMethod)
 {
     if save_type <= 1 { return; } // Only care about actual save files being written
-
+    
     println!("Save type #{} being written to slot #{}", save_type, slot_id);
-    GameVariableManager::set_number("G_alear_boon_type", BOON_TYPE.load(Ordering::Relaxed));
-    GameVariableManager::set_number("G_alear_bane_type", BANE_TYPE.load(Ordering::Relaxed));
 
-    println!("Current boon type is {:?} and bane type is {:?}", BOON_TYPE.load(Ordering::Relaxed), BANE_TYPE.load(Ordering::Relaxed));
+    let boon_type = BOON_TYPE.load(Ordering::Relaxed);
+    let bane_type = BANE_TYPE.load(Ordering::Relaxed);
+
+    if (boon_type == bane_type) || (boon_type == 0 && bane_type == 1)
+    {
+        // println!("Uninitialized boon/bane types detected, defaulting to MAG boon and DEF bane.");
+        //BOON_TYPE.store(BoonBaneType::Mag as i32, Ordering::Relaxed);
+        //BANE_TYPE.store(BoonBaneType::Def as i32, Ordering::Relaxed);
+    }
+    else 
+    {
+        GameVariableManager::set_number("G_ALEAR_BOON_TYPE", BOON_TYPE.load(Ordering::Relaxed));
+        GameVariableManager::set_number("G_ALEAR_BANE_TYPE", BANE_TYPE.load(Ordering::Relaxed));  
+    }
+
+    println!("Current boon type is {:?} and bane type is {:?}", boon_type, bane_type);
 
     patch_gamedata_with_boon_bane();
     
@@ -475,6 +488,7 @@ pub extern "C" fn boon_key_call(this: MainMenuSequence_LanguageSettingMenuSequen
     menu.set_m_lang_voice_index_old(old_index);
     menu.set_m_lang_voice_index(new_index);
     BOON_TYPE.store(new_index, Ordering::Relaxed);
+    GameVariableManager::make_entry_norewind("G_ALEAR_BOON_TYPE", new_index);
 
     let content = this.m_menu_item_content()
         .try_cast::<MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItemContent>()
@@ -531,6 +545,7 @@ pub extern "C" fn bane_key_call(this: MainMenuSequence_LanguageSettingMenuSequen
     menu.set_m_lang_mess_index_old(old_index);
     menu.set_m_lang_mess_index(new_index);
     BANE_TYPE.store(new_index, Ordering::Relaxed);
+    GameVariableManager::make_entry_norewind("G_ALEAR_BANE_TYPE", new_index);
 
     let content = this.m_menu_item_content()
         .try_cast::<MainMenuSequence_LanguageSettingMenuSequence_Menu_MenuItemContent>()
