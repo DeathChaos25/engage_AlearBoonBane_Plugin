@@ -96,17 +96,19 @@ fn print_stat_block(label: &str, s: &PersonDataStats)
 
 pub fn patch_gamedata_with_boon_bane()
 {
-    let mut boon_type = return_as_boon_bane_type(GameVariableManager::get_number("alear_boon_type")) as i32;
-    let mut bane_type = return_as_boon_bane_type(GameVariableManager::get_number("alear_bane_type")) as i32;
+    let mut boon_type = GameVariableManager::get_number("alear_boon_type");
+    let mut bane_type = GameVariableManager::get_number("alear_bane_type");
 
-    if (boon_type as i32) == (bane_type as i32) 
+    if boon_type == bane_type
     {
         println!("Uninitialized boon/bane types detected, attempting to fix.");
         boon_type = BOON_TYPE.load(Ordering::Relaxed);
         bane_type = BANE_TYPE.load(Ordering::Relaxed);
         // this fixes the issue caused by skipping prologue and thus skipping the savedata
+        GameVariableManager::set_number("alear_boon_type", boon_type);
+        GameVariableManager::set_number("alear_bane_type", bane_type);
 
-        if (boon_type as i32) == (bane_type as i32) 
+        if boon_type == bane_type
         {
             // user loaded an existing save without ever picking boon/bane
             println!("Failed to fix boon/bane types, defaulting to MAG boon and DEF bane.");
@@ -115,8 +117,8 @@ pub fn patch_gamedata_with_boon_bane()
         }
     }
 
-    BOON_TYPE.store(boon_type as i32, Ordering::Relaxed);
-    BANE_TYPE.store(bane_type as i32, Ordering::Relaxed);
+    BOON_TYPE.store(boon_type, Ordering::Relaxed);
+    BANE_TYPE.store(bane_type, Ordering::Relaxed);
 
     println!("Current boon type is {:?} and bane type is {:?}", boon_type, bane_type);
 
@@ -170,10 +172,6 @@ pub fn patch_gamedata_with_boon_bane()
         growths.set_def(combined.growths[6]);
         growths.set_mdef(combined.growths[7]);
         growths.set_phys(combined.growths[8]);
-
-        println!("Growths after applying boon/bane:");
-        println!("  HP: {}, Str: {}, Mag: {}, Tech: {}, Quick: {}, Lck: {}, Def: {}, MDef: {}, Phys: {}", 
-            growths.get_hp(), growths.get_str(), growths.get_magic(), growths.get_tech(), growths.get_quick(), growths.get_luck(), growths.get_def(), growths.get_mdef(), growths.get_phys());
     }
 }
 
