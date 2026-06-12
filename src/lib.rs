@@ -96,8 +96,8 @@ fn print_stat_block(label: &str, s: &PersonDataStats)
 
 pub fn patch_gamedata_with_boon_bane()
 {
-    let mut boon_type = GameVariableManager::get_number("alear_boon_type");
-    let mut bane_type = GameVariableManager::get_number("alear_bane_type");
+    let mut boon_type = GameVariableManager::get_number("G_alear_boon_type");
+    let mut bane_type = GameVariableManager::get_number("G_alear_bane_type");
 
     if boon_type == bane_type
     {
@@ -105,8 +105,8 @@ pub fn patch_gamedata_with_boon_bane()
         boon_type = BOON_TYPE.load(Ordering::Relaxed);
         bane_type = BANE_TYPE.load(Ordering::Relaxed);
         // this fixes the issue caused by skipping prologue and thus skipping the savedata
-        GameVariableManager::set_number("alear_boon_type", boon_type);
-        GameVariableManager::set_number("alear_bane_type", bane_type);
+        GameVariableManager::set_number("G_alear_boon_type", boon_type);
+        GameVariableManager::set_number("G_alear_bane_type", bane_type);
 
         if boon_type == bane_type
         {
@@ -365,8 +365,8 @@ pub fn App_GameSaveDataUtil__Write(_super: u64, save_type: i32, slot_id: i32, re
     if save_type <= 1 { return; } // Only care about actual save files being written
 
     println!("Save type #{} being written to slot #{}", save_type, slot_id);
-    GameVariableManager::set_number("alear_boon_type", BOON_TYPE.load(Ordering::Relaxed));
-    GameVariableManager::set_number("alear_bane_type", BANE_TYPE.load(Ordering::Relaxed));
+    GameVariableManager::set_number("G_alear_boon_type", BOON_TYPE.load(Ordering::Relaxed));
+    GameVariableManager::set_number("G_alear_bane_type", BANE_TYPE.load(Ordering::Relaxed));
 
     println!("Current boon type is {:?} and bane type is {:?}", BOON_TYPE.load(Ordering::Relaxed), BANE_TYPE.load(Ordering::Relaxed));
 
